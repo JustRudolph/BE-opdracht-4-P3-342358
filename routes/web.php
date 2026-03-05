@@ -3,10 +3,15 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LeverancierController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\AllergeenController;
 
 Route::get('/', function () {
     return view('home');
 });
+
+// Allergen Overview Routes (User Story 1)
+Route::get('/allergeens', [AllergeenController::class, 'index'])->name('allergeens.index');
+Route::get('/allergeens/{productId}/supplier-details', [AllergeenController::class, 'supplierDetails'])->name('allergeens.supplier-details');
 
 // User Story 1: Wijzigen Leverancier
 Route::get('/leveranciers', [LeverancierController::class, 'index'])->name('leveranciers.index');
