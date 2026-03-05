@@ -16,8 +16,16 @@ class AllergeenController extends Controller
      */
     public function index(Request $request)
     {
-        $allergeens = Allergeen::where('IsActief', true)->get();
-        $selectedAllergeenId = $request->input('allergen_id');
+        // Validate input
+        $validated = $request->validate([
+            'allergen_id' => 'nullable|integer|exists:allergeens,id',
+        ]);
+
+        $allergeens = Allergeen::where('IsActief', true)
+            ->orderBy('Naam', 'ASC')
+            ->get();
+        
+        $selectedAllergeenId = $validated['allergen_id'] ?? null;
         
         $query = Product::where('IsActief', true);
 
@@ -48,23 +56,30 @@ class AllergeenController extends Controller
      */
     public function supplierDetails($productId)
     {
+        // Validate input
+        if (!is_numeric($productId)) {
+            abort(404, 'Invalid product ID');
+        }
+
         $product = Product::with('allergeens')
+            ->where('IsActief', true)
             ->findOrFail($productId);
 
         // Get all suppliers for this product
         $suppliers = $product->leveranciers()
+            ->where('IsActief', true)
             ->with(['contact'])
             ->get();
 
         if ($suppliers->isEmpty()) {
-            abort(404, 'Geen leverancier gevonden voor dit product');
+            abort(404, 'No supplier found for this product');
         }
 
         // Get the first supplier (most recent delivery)
         $supplier = $suppliers->first();
 
         // Check if supplier has contact information
-        $hasContactInfo = $supplier->contact !== null;
+        $hasContactInfo = $supplier->contact !== null && $supplier->contact->IsActief;
 
         return view('allergeens.supplier-details', [
             'product' => $product,
