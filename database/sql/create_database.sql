@@ -124,7 +124,8 @@ INSERT INTO `leveranciers` (`id`, `Naam`, `ContactPersoon`, `LeverancierNummer`,
 (3, 'Haribo', 'Sven Stalman', 'L1029324748', '06-24383291', 3, 1, NULL),
 (4, 'Basset', 'Joyce Stelterberg', 'L1023845773', '06-48293823', 4, 1, NULL),
 (5, 'De Bron', 'Remco Veenstra', 'L1023857736', '06-34291234', 5, 1, NULL),
-(6, 'Quality Street', 'Johan Nooij', 'L1029234586', '06-23458456', 6, 1, NULL);
+(6, 'Quality Street', 'Johan Nooij', 'L1029234586', '06-23458456', 6, 1, NULL),
+(7, 'Hom Ken Food', 'Hom Ken', 'L1029234599', '06-23458477', NULL, 1, NULL);
 
 -- Insert Products
 INSERT INTO `products` (`id`, `Naam`, `Barcode`, `IsActief`, `Opmerking`) VALUES
@@ -140,7 +141,8 @@ INSERT INTO `products` (`id`, `Naam`, `Barcode`, `IsActief`, `Opmerking`) VALUES
 (10, 'Winegums', '8719587327527', 0, NULL),
 (11, 'Drop Munten', '8719587322345', 1, NULL),
 (12, 'Kruis Drop', '8719587322265', 1, NULL),
-(13, 'Zoute Ruitjes', '8719587323256', 1, NULL);
+(13, 'Zoute Ruitjes', '8719587323256', 1, NULL),
+(14, 'Drop Ninja''s', '8719587323277', 1, NULL);
 
 -- Insert Magazijns
 INSERT INTO `magazijns` (`id`, `ProductId`, `VerpakkingsEenheid`, `AantalAanwezig`, `IsActief`, `Opmerking`) VALUES
@@ -156,7 +158,8 @@ INSERT INTO `magazijns` (`id`, `ProductId`, `VerpakkingsEenheid`, `AantalAanwezi
 (10, 10, 3.00, NULL, 1, NULL),
 (11, 11, 2.00, 367, 1, NULL),
 (12, 12, 1.00, 467, 1, NULL),
-(13, 13, 5.00, 20, 1, NULL);
+(13, 13, 5.00, 20, 1, NULL),
+(14, 14, 10.00, 150, 1, NULL);
 
 -- Insert Allergeens
 INSERT INTO `allergeens` (`id`, `Naam`, `Omschrijving`, `IsActief`, `Opmerking`) VALUES
@@ -179,7 +182,8 @@ INSERT INTO `product_per_allergeens` (`id`, `ProductId`, `AllergeenId`, `IsActie
 (9, 12, 4, 1, NULL),
 (10, 13, 1, 1, NULL),
 (11, 13, 4, 1, NULL),
-(12, 13, 5, 1, NULL);
+(12, 13, 5, 1, NULL),
+(13, 14, 5, 1, NULL);
 
 -- Insert ProductPerLeveranciers
 INSERT INTO `product_per_leveranciers` (`id`, `LeverancierId`, `ProductId`, `DatumLevering`, `Aantal`, `DatumEerstVolgendeLevering`, `IsActief`, `Opmerking`) VALUES
@@ -199,7 +203,8 @@ INSERT INTO `product_per_leveranciers` (`id`, `LeverancierId`, `ProductId`, `Dat
 (14, 5, 11, '2024-11-10', 47, '2024-11-17', 1, NULL),
 (15, 5, 11, '2024-11-19', 60, '2024-11-26', 1, NULL),
 (16, 5, 12, '2024-11-11', 45, NULL, 1, NULL),
-(17, 5, 13, '2024-11-12', 23, NULL, 1, NULL);
+(17, 5, 13, '2024-11-12', 23, NULL, 1, NULL),
+(18, 7, 14, '2024-11-14', 20, NULL, 1, NULL);
 
 -- Add FK from leveranciers to contacts (after both tables exist)
 ALTER TABLE `leveranciers`
