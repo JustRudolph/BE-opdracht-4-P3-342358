@@ -4,6 +4,10 @@
 -- Description: Creates all tables with relationships and sample data
 -- ============================================================
 
+-- Create database if it doesn't exist
+CREATE DATABASE IF NOT EXISTS alergeen CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE alergeen;
+
 -- Drop tables if they exist (in correct order due to foreign keys)
 DROP TABLE IF EXISTS product_per_leveranciers;
 DROP TABLE IF EXISTS product_per_allergeens;

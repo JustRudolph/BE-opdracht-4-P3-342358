@@ -64,8 +64,13 @@ class AllergeenControllerTest extends TestCase
         
         $products = $response->viewData('products');
         
-        // Verify we have 2 products with Gluten allergen
-        $this->assertTrue($products->count() >= 1, 'At least one product with Gluten should be returned');
+        // Verify we have exactly 2 products with Gluten allergen
+        $this->assertCount(2, $products, 'Only products with the selected allergen should be returned');
+
+        $productIds = $products->pluck('id')->toArray();
+        $this->assertContains($product1->id, $productIds);
+        $this->assertContains($product2->id, $productIds);
+        $this->assertNotContains($product3->id, $productIds, 'Products without the selected allergen should not be returned');
         
         // Verify products are sorted alphabetically
         $productNames = $products->map(fn($p) => $p->Naam)->toArray();

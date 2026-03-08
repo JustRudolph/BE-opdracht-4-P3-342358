@@ -27,16 +27,22 @@ class AllergeenController extends Controller
         
         $selectedAllergeenId = $validated['allergen_id'] ?? null;
         
-        $query = Product::where('IsActief', true);
+        $query = Product::where('IsActief', true)
+            ->with('magazijn');
 
         // Filter by allergen if selected
         if ($selectedAllergeenId) {
             $query->whereHas('allergeens', function ($q) use ($selectedAllergeenId) {
-                $q->where('AllergeenId', $selectedAllergeenId);
+                $q->where('allergeens.id', $selectedAllergeenId);
             });
+
+            $query->with(['allergeens' => function ($q) use ($selectedAllergeenId) {
+                $q->where('allergeens.id', $selectedAllergeenId);
+            }]);
         } else {
             // Show all products with any allergen
             $query->whereHas('allergeens');
+            $query->with('allergeens');
         }
 
         // Sort by name (A-Z)
@@ -67,7 +73,7 @@ class AllergeenController extends Controller
 
         // Get all suppliers for this product
         $suppliers = $product->leveranciers()
-            ->where('IsActief', true)
+            ->where('leveranciers.IsActief', true)
             ->with(['contact'])
             ->get();
 
