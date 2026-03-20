@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('contacts', function (Blueprint $table) {
             $table->id();
             $table->string('Straat', 100);
-            $table->integer('Huisnummer');
+            $table->string('Huisnummer', 10);
             $table->string('Postcode', 10);
             $table->string('Stad', 100);
             $table->boolean('IsActief')->default(true);
