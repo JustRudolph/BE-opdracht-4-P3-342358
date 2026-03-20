@@ -38,6 +38,15 @@
     </style>
 </head>
 <body>
+@php
+    $baseQuery = [];
+    if (!empty($startDate)) {
+        $baseQuery['start_date'] = $startDate;
+    }
+    if (!empty($endDate)) {
+        $baseQuery['end_date'] = $endDate;
+    }
+@endphp
 <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>Overzicht Geleverde Producten</h1>
@@ -104,11 +113,10 @@
                         <table class="table table-striped table-hover">
                             <thead class="table-dark">
                                 <tr>
-                                    <th>Leverancier</th>
-                                    <th>Product</th>
-                                    <th>Barcode</th>
-                                    <th>Totaal Geleverd</th>
-                                    <th>Aant.Levering</th>
+                                    <th>Naam Leverancier</th>
+                                    <th>Contact person</th>
+                                    <th>Product naam</th>
+                                    <th>Totaal geleverd</th>
                                     <th>Specificatie</th>
                                 </tr>
                             </thead>
@@ -116,12 +124,11 @@
                                 @foreach($deliveredProducts as $product)
                                     <tr>
                                         <td>{{ $product->LeverancierNaam }}</td>
+                                        <td>{{ $product->ContactPersoon }}</td>
                                         <td>{{ $product->ProductNaam }}</td>
-                                        <td>{{ $product->Barcode }}</td>
                                         <td>{{ $product->TotalAantalGeleverd }}</td>
-                                        <td>{{ $product->AantalLeveringen }}</td>
                                         <td>
-                                            <a href="{{ route('delivered-products.specifications', ['productId' => $product->ProductId]) }}@if($startDate && $endDate)?start_date={{ $startDate }}&end_date={{ $endDate }}@endif" 
+                                            <a href="{{ route('delivered-products.specifications', array_merge(['productId' => $product->ProductId], $baseQuery)) }}"
                                                class="btn btn-info btn-sm" 
                                                title="Details">
                                                 ?
@@ -139,12 +146,12 @@
                             <ul class="pagination justify-content-center">
                                 @if($currentPage > 1)
                                     <li class="page-item">
-                                        <a class="page-link" href="{{ route('delivered-products.index') }}@if($startDate && $endDate)?start_date={{ $startDate }}&end_date={{ $endDate }}&page=1@else?page=1@endif">
+                                        <a class="page-link" href="{{ route('delivered-products.index', array_merge($baseQuery, ['page' => 1])) }}">
                                             Eerste
                                         </a>
                                     </li>
                                     <li class="page-item">
-                                        <a class="page-link" href="{{ route('delivered-products.index') }}@if($startDate && $endDate)?start_date={{ $startDate }}&end_date={{ $endDate }}&page={{ $currentPage - 1 }}@else?page={{ $currentPage - 1 }}@endif">
+                                        <a class="page-link" href="{{ route('delivered-products.index', array_merge($baseQuery, ['page' => $currentPage - 1])) }}">
                                             Vorige
                                         </a>
                                     </li>
@@ -157,7 +164,7 @@
                                         </li>
                                     @else
                                         <li class="page-item">
-                                            <a class="page-link" href="{{ route('delivered-products.index') }}@if($startDate && $endDate)?start_date={{ $startDate }}&end_date={{ $endDate }}&page={{ $i }}@else?page={{ $i }}@endif">
+                                            <a class="page-link" href="{{ route('delivered-products.index', array_merge($baseQuery, ['page' => $i])) }}">
                                                 {{ $i }}
                                             </a>
                                         </li>
@@ -166,12 +173,12 @@
 
                                 @if($currentPage < $totalPages)
                                     <li class="page-item">
-                                        <a class="page-link" href="{{ route('delivered-products.index') }}@if($startDate && $endDate)?start_date={{ $startDate }}&end_date={{ $endDate }}&page={{ $currentPage + 1 }}@else?page={{ $currentPage + 1 }}@endif">
+                                        <a class="page-link" href="{{ route('delivered-products.index', array_merge($baseQuery, ['page' => $currentPage + 1])) }}">
                                             Volgende
                                         </a>
                                     </li>
                                     <li class="page-item">
-                                        <a class="page-link" href="{{ route('delivered-products.index') }}@if($startDate && $endDate)?start_date={{ $startDate }}&end_date={{ $endDate }}&page={{ $totalPages }}@else?page={{ $totalPages }}@endif">
+                                        <a class="page-link" href="{{ route('delivered-products.index', array_merge($baseQuery, ['page' => $totalPages])) }}">
                                             Laatste
                                         </a>
                                     </li>

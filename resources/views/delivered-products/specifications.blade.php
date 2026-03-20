@@ -24,10 +24,16 @@
     </style>
 </head>
 <body>
+@php
+    $baseQuery = [];
+    if (!empty($startDate) && !empty($endDate)) {
+        $baseQuery = ['start_date' => $startDate, 'end_date' => $endDate];
+    }
+@endphp
 <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>Specificatie Geleverde Producten</h1>
-        <a href="{{ route('delivered-products.index') }}@if($startDate && $endDate)?start_date={{ $startDate }}&end_date={{ $endDate }}@endif" class="btn btn-secondary">
+        <a href="{{ route('delivered-products.index', $baseQuery) }}" class="btn btn-secondary">
             &larr; Terug
         </a>
     </div>
@@ -113,12 +119,12 @@
                                 <ul class="pagination justify-content-center">
                                     @if($currentPage > 1)
                                         <li class="page-item">
-                                            <a class="page-link" href="{{ route('delivered-products.specifications', ['productId' => $product->id]) }}@if($startDate && $endDate)?start_date={{ $startDate }}&end_date={{ $endDate }}&page=1@else?page=1@endif">
+                                            <a class="page-link" href="{{ route('delivered-products.specifications', array_merge(['productId' => $product->id, 'page' => 1], $baseQuery)) }}">
                                                 Eerste
                                             </a>
                                         </li>
                                         <li class="page-item">
-                                            <a class="page-link" href="{{ route('delivered-products.specifications', ['productId' => $product->id]) }}@if($startDate && $endDate)?start_date={{ $startDate }}&end_date={{ $endDate }}&page={{ $currentPage - 1 }}@else?page={{ $currentPage - 1 }}@endif">
+                                            <a class="page-link" href="{{ route('delivered-products.specifications', array_merge(['productId' => $product->id, 'page' => $currentPage - 1], $baseQuery)) }}">
                                                 Vorige
                                             </a>
                                         </li>
@@ -131,7 +137,7 @@
                                             </li>
                                         @else
                                             <li class="page-item">
-                                                <a class="page-link" href="{{ route('delivered-products.specifications', ['productId' => $product->id]) }}@if($startDate && $endDate)?start_date={{ $startDate }}&end_date={{ $endDate }}&page={{ $i }}@else?page={{ $i }}@endif">
+                                                <a class="page-link" href="{{ route('delivered-products.specifications', array_merge(['productId' => $product->id, 'page' => $i], $baseQuery)) }}">
                                                     {{ $i }}
                                                 </a>
                                             </li>
@@ -140,12 +146,12 @@
 
                                     @if($currentPage < $totalPages)
                                         <li class="page-item">
-                                            <a class="page-link" href="{{ route('delivered-products.specifications', ['productId' => $product->id]) }}@if($startDate && $endDate)?start_date={{ $startDate }}&end_date={{ $endDate }}&page={{ $currentPage + 1 }}@else?page={{ $currentPage + 1 }}@endif">
+                                            <a class="page-link" href="{{ route('delivered-products.specifications', array_merge(['productId' => $product->id, 'page' => $currentPage + 1], $baseQuery)) }}">
                                                 Volgende
                                             </a>
                                         </li>
                                         <li class="page-item">
-                                            <a class="page-link" href="{{ route('delivered-products.specifications', ['productId' => $product->id]) }}@if($startDate && $endDate)?start_date={{ $startDate }}&end_date={{ $endDate }}&page={{ $totalPages }}@else?page={{ $totalPages }}@endif">
+                                            <a class="page-link" href="{{ route('delivered-products.specifications', array_merge(['productId' => $product->id, 'page' => $totalPages], $baseQuery)) }}">
                                                 Laatste
                                             </a>
                                         </li>

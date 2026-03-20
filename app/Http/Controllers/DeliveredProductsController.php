@@ -24,40 +24,49 @@ class DeliveredProductsController extends Controller
         $itemsPerPage = 4;
 
         try {
-            // If both dates are provided, use date-filtered query
-            if ($startDate && $endDate) {
+            if ($startDate) {
                 $startDate = date('Y-m-d', strtotime($startDate));
+            }
+            if ($endDate) {
                 $endDate = date('Y-m-d', strtotime($endDate));
-                
-                // Call stored procedure for date range
-                $deliveredProducts = DB::select(
-                    'CALL sp_GetDeliveredProductsByDateRange(?, ?)',
-                    [$startDate, $endDate]
-                );
+            }
 
-                // If no results, set message for Scenario 03
-                if (empty($deliveredProducts)) {
+            $query = "
+                SELECT 
+                    l.Naam AS LeverancierNaam,
+                    l.ContactPersoon,
+                    p.Naam AS ProductNaam,
+                    p.id AS ProductId,
+                    SUM(ppl.Aantal) AS TotalAantalGeleverd
+                FROM product_per_leveranciers ppl
+                JOIN leveranciers l ON ppl.LeverancierId = l.id
+                JOIN products p ON ppl.ProductId = p.id
+                WHERE ppl.IsActief = 1
+            ";
+
+            $bindings = [];
+
+            if ($startDate) {
+                $query .= ' AND ppl.DatumLevering >= ?';
+                $bindings[] = $startDate;
+            }
+
+            if ($endDate) {
+                $query .= ' AND ppl.DatumLevering <= ?';
+                $bindings[] = $endDate;
+            }
+
+            $query .= "
+                GROUP BY ppl.ProductId, l.id
+                ORDER BY l.Naam ASC, p.Naam ASC
+            ";
+
+            $deliveredProducts = DB::select($query, $bindings);
+
+            if (empty($deliveredProducts)) {
+                if ($startDate || $endDate) {
                     $message = "Er zijn geen leveringen geweest van producten in deze periode";
-                }
-            } else {
-                // Get all delivered products regardless of date
-                $deliveredProducts = DB::select('
-                    SELECT 
-                        l.Naam AS LeverancierNaam,
-                        p.Naam AS ProductNaam,
-                        p.Barcode,
-                        p.id AS ProductId,
-                        SUM(ppl.Aantal) AS TotalAantalGeleverd,
-                        COUNT(ppl.id) AS AantalLeveringen
-                    FROM product_per_leveranciers ppl
-                    JOIN leveranciers l ON ppl.LeverancierId = l.id
-                    JOIN products p ON ppl.ProductId = p.id
-                    WHERE ppl.IsActief = 1 AND l.IsActief = 1 AND p.IsActief = 1
-                    GROUP BY ppl.ProductId, l.id
-                    ORDER BY l.Naam ASC, p.Naam ASC
-                ');
-                
-                if (empty($deliveredProducts)) {
+                } else {
                     $message = "Er zijn geen geleverde producten beschikbaar";
                 }
             }
@@ -106,38 +115,47 @@ class DeliveredProductsController extends Controller
                 return back()->withError('Product niet gevonden');
             }
 
-            // If both dates are provided, use date-filtered query
-            if ($startDate && $endDate) {
+            if ($startDate) {
                 $startDate = date('Y-m-d', strtotime($startDate));
+            }
+            if ($endDate) {
                 $endDate = date('Y-m-d', strtotime($endDate));
-                
-                // Call stored procedure for specifications
-                $specifications = DB::select(
-                    'CALL sp_GetProductDeliverySpecifications(?, ?, ?)',
-                    [$productId, $startDate, $endDate]
-                );
+            }
 
-                if (empty($specifications)) {
+            $query = '
+                SELECT 
+                    l.Naam AS LeverancierNaam,
+                    c.Straat,
+                    c.Huisnummer,
+                    ppl.DatumLevering,
+                    ppl.Aantal,
+                    ppl.DatumEerstVolgendeLevering
+                FROM product_per_leveranciers ppl
+                JOIN leveranciers l ON ppl.LeverancierId = l.id
+                LEFT JOIN contacts c ON l.ContactId = c.id
+                WHERE ppl.ProductId = ? AND ppl.IsActief = 1
+            ';
+
+            $bindings = [$productId];
+
+            if ($startDate) {
+                $query .= ' AND ppl.DatumLevering >= ?';
+                $bindings[] = $startDate;
+            }
+
+            if ($endDate) {
+                $query .= ' AND ppl.DatumLevering <= ?';
+                $bindings[] = $endDate;
+            }
+
+            $query .= ' ORDER BY ppl.DatumLevering DESC';
+
+            $specifications = DB::select($query, $bindings);
+
+            if (empty($specifications)) {
+                if ($startDate || $endDate) {
                     $message = "Er zijn geen leveringen voor dit product in deze periode";
-                }
-            } else {
-                // Get all delivery specifications for this product
-                $specifications = DB::select('
-                    SELECT 
-                        l.Naam AS LeverancierNaam,
-                        c.Straat,
-                        c.Huisnummer,
-                        ppl.DatumLevering,
-                        ppl.Aantal,
-                        ppl.DatumEerstVolgendeLevering
-                    FROM product_per_leveranciers ppl
-                    JOIN leveranciers l ON ppl.LeverancierId = l.id
-                    LEFT JOIN contacts c ON l.ContactId = c.id
-                    WHERE ppl.ProductId = ? AND ppl.IsActief = 1
-                    ORDER BY ppl.DatumLevering DESC
-                ', [$productId]);
-
-                if (empty($specifications)) {
+                } else {
                     $message = "Er zijn geen leveringen beschikbaar voor dit product";
                 }
             }
