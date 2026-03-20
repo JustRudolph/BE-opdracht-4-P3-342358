@@ -1,19 +1,41 @@
-@extends('layouts.app')
-
-@section('title', 'Specificatie Geleverde Producten')
-
-@section('content')
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Specificatie Geleverde Producten</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f5f5f5;
+            padding: 20px 0;
+        }
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            border: none;
+        }
+    </style>
+</head>
+<body>
 <div class="container mt-5">
-    <a href="{{ route('delivered-products.index') }}?start_date={{ $startDate }}&end_date={{ $endDate }}" class="btn btn-secondary mb-3">
-        &larr; Terug naar Overzicht
-    </a>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Specificatie Geleverde Producten</h1>
+        <a href="{{ route('delivered-products.index') }}?start_date={{ $startDate }}&end_date={{ $endDate }}" class="btn btn-secondary">
+            &larr; Terug
+        </a>
+    </div>
 
     @if($product)
-        <h1 class="mb-4">Specificatie Geleverde Producten</h1>
-        
         <div class="card mb-4">
             <div class="card-header">
-                <h5>Product Information</h5>
+                <h5 class="mb-0">Product Informatie</h5>
             </div>
             <div class="card-body">
                 <div class="row">
@@ -38,7 +60,7 @@
             <!-- Scenario 02: Display delivery specifications -->
             <div class="card">
                 <div class="card-header">
-                    <h5>Leveringsgegevens</h5>
+                    <h5 class="mb-0">Leveringsgegevens</h5>
                 </div>
                 <div class="card-body">
                     @if(count($specifications) > 0)
@@ -50,7 +72,7 @@
                                         <th>Contactpersoon</th>
                                         <th>Leveringsdatum</th>
                                         <th>Aantal Geleverd</th>
-                                        <th>Volgende Levering Datum</th>
+                                        <th>Volgende Levering</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -131,4 +153,7 @@
         </div>
     @endif
 </div>
-@endsection
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

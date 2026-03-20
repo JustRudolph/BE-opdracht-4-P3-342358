@@ -1,15 +1,53 @@
-@extends('layouts.app')
-
-@section('title', 'Overzicht Geleverde Producten')
-
-@section('content')
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Overzicht Geleverde Producten</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f5f5f5;
+            padding: 20px 0;
+        }
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            border: none;
+        }
+        .btn-info {
+            background-color: #0dcaf0;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        .btn-info:hover {
+            background-color: #0dbbdd;
+        }
+    </style>
+</head>
+<body>
 <div class="container mt-5">
-    <h1 class="mb-4">Overzicht Geleverde Producten</h1>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Overzicht Geleverde Producten</h1>
+        <a href="{{ url('/') }}" class="btn btn-secondary">← Home</a>
+    </div>
     
     <!-- Date Range Filter Form -->
     <div class="card mb-4">
         <div class="card-header">
-            <h5>Selecteer Periode</h5>
+            <h5 class="mb-0">Selecteer Periode</h5>
         </div>
         <div class="card-body">
             <form method="GET" action="{{ route('delivered-products.index') }}" class="row g-3">
@@ -53,7 +91,7 @@
             <!-- Scenario 01: Display delivered products -->
             <div class="card">
                 <div class="card-header">
-                    <h5>Geleverde Producten ({{ $totalProducts }} totaal)</h5>
+                    <h5 class="mb-0">Geleverde Producten ({{ $totalProducts }} totaal)</h5>
                 </div>
                 <div class="card-body">
                     @if(count($deliveredProducts) > 0)
@@ -65,7 +103,7 @@
                                         <th>Product</th>
                                         <th>Barcode</th>
                                         <th>Totaal Geleverd</th>
-                                        <th>Aantallevering</th>
+                                        <th>Aant.Levering</th>
                                         <th>Specificatie</th>
                                     </tr>
                                 </thead>
@@ -79,8 +117,8 @@
                                             <td>{{ $product->AantalLeveringen }}</td>
                                             <td>
                                                 <a href="{{ route('delivered-products.specifications', ['productId' => $product->ProductId]) }}?start_date={{ $startDate }}&end_date={{ $endDate }}" 
-                                                   class="btn btn-sm btn-info" 
-                                                   title="Meer informatie">
+                                                   class="btn btn-info btn-sm" 
+                                                   title="Details">
                                                     ?
                                                 </a>
                                             </td>
@@ -148,4 +186,7 @@
         </div>
     @endif
 </div>
-@endsection
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
