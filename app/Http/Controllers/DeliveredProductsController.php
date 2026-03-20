@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 class DeliveredProductsController extends Controller
 {
     /**
-     * Display the overview of delivered products within a date range
+     * Display the overview of delivered products within a date range or all products
      * Scenario 01 & 03
      */
     public function index(Request $request)
@@ -19,20 +19,17 @@ class DeliveredProductsController extends Controller
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
         $deliveredProducts = [];
-        $showResults = false;
+        $showResults = true;
         $message = null;
         $itemsPerPage = 4;
 
-        // If both dates are provided, execute the query
-        if ($startDate && $endDate) {
-            $showResults = true;
-            
-            // Validate dates
-            try {
+        try {
+            // If both dates are provided, use date-filtered query
+            if ($startDate && $endDate) {
                 $startDate = date('Y-m-d', strtotime($startDate));
                 $endDate = date('Y-m-d', strtotime($endDate));
                 
-                // Call stored procedure
+                // Call stored procedure for date range
                 $deliveredProducts = DB::select(
                     'CALL sp_GetDeliveredProductsByDateRange(?, ?)',
                     [$startDate, $endDate]
@@ -42,9 +39,30 @@ class DeliveredProductsController extends Controller
                 if (empty($deliveredProducts)) {
                     $message = "Er zijn geen leveringen geweest van producten in deze periode";
                 }
-            } catch (\Exception $e) {
-                return back()->withError('Er is een fout opgetreden: ' . $e->getMessage());
+            } else {
+                // Get all delivered products regardless of date
+                $deliveredProducts = DB::select('
+                    SELECT 
+                        l.Naam AS LeverancierNaam,
+                        p.Naam AS ProductNaam,
+                        p.Barcode,
+                        p.id AS ProductId,
+                        SUM(ppl.Aantal) AS TotalAantalGeleverd,
+                        COUNT(ppl.id) AS AantalLeveringen
+                    FROM product_per_leveranciers ppl
+                    JOIN leveranciers l ON ppl.LeverancierId = l.id
+                    JOIN products p ON ppl.ProductId = p.id
+                    WHERE ppl.IsActief = 1 AND l.IsActief = 1 AND p.IsActief = 1
+                    GROUP BY ppl.ProductId, l.id
+                    ORDER BY l.Naam ASC, p.Naam ASC
+                ');
+                
+                if (empty($deliveredProducts)) {
+                    $message = "Er zijn geen geleverde producten beschikbaar";
+                }
             }
+        } catch (\Exception $e) {
+            return back()->withError('Er is een fout opgetreden: ' . $e->getMessage());
         }
 
         // Paginate results
@@ -80,18 +98,19 @@ class DeliveredProductsController extends Controller
         $message = null;
         $itemsPerPage = 4;
 
-        if ($startDate && $endDate) {
-            try {
+        try {
+            // Get product info
+            $product = Product::find($productId);
+            
+            if (!$product) {
+                return back()->withError('Product niet gevonden');
+            }
+
+            // If both dates are provided, use date-filtered query
+            if ($startDate && $endDate) {
                 $startDate = date('Y-m-d', strtotime($startDate));
                 $endDate = date('Y-m-d', strtotime($endDate));
                 
-                // Get product info
-                $product = Product::find($productId);
-                
-                if (!$product) {
-                    return back()->withError('Product niet gevonden');
-                }
-
                 // Call stored procedure for specifications
                 $specifications = DB::select(
                     'CALL sp_GetProductDeliverySpecifications(?, ?, ?)',
@@ -101,9 +120,29 @@ class DeliveredProductsController extends Controller
                 if (empty($specifications)) {
                     $message = "Er zijn geen leveringen voor dit product in deze periode";
                 }
-            } catch (\Exception $e) {
-                return back()->withError('Er is een fout opgetreden: ' . $e->getMessage());
+            } else {
+                // Get all delivery specifications for this product
+                $specifications = DB::select('
+                    SELECT 
+                        l.Naam AS LeverancierNaam,
+                        c.Straat,
+                        c.Huisnummer,
+                        ppl.DatumLevering,
+                        ppl.Aantal,
+                        ppl.DatumEerstVolgendeLevering
+                    FROM product_per_leveranciers ppl
+                    JOIN leveranciers l ON ppl.LeverancierId = l.id
+                    LEFT JOIN contacts c ON l.ContactId = c.id
+                    WHERE ppl.ProductId = ? AND ppl.IsActief = 1
+                    ORDER BY ppl.DatumLevering DESC
+                ', [$productId]);
+
+                if (empty($specifications)) {
+                    $message = "Er zijn geen leveringen beschikbaar voor dit product";
+                }
             }
+        } catch (\Exception $e) {
+            return back()->withError('Er is een fout opgetreden: ' . $e->getMessage());
         }
 
         // Paginate results

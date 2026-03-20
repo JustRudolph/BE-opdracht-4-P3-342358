@@ -27,7 +27,7 @@
 <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>Specificatie Geleverde Producten</h1>
-        <a href="{{ route('delivered-products.index') }}?start_date={{ $startDate }}&end_date={{ $endDate }}" class="btn btn-secondary">
+        <a href="{{ route('delivered-products.index') }}@if($startDate && $endDate)?start_date={{ $startDate }}&end_date={{ $endDate }}@endif" class="btn btn-secondary">
             &larr; Terug
         </a>
     </div>
@@ -44,7 +44,13 @@
                         <p><strong>Barcode:</strong> {{ $product->Barcode }}</p>
                     </div>
                     <div class="col-md-6">
-                        <p><strong>Periode:</strong> {{ $startDate }} tot {{ $endDate }}</p>
+                        <p><strong>Periode:</strong> 
+                            @if($startDate && $endDate)
+                                {{ $startDate }} tot {{ $endDate }}
+                            @else
+                                Alle beschikbare gegevens
+                            @endif
+                        </p>
                         <p><strong>Totaal Leveringen:</strong> {{ $totalSpecifications }}</p>
                     </div>
                 </div>
@@ -69,7 +75,7 @@
                                 <thead class="table-dark">
                                     <tr>
                                         <th>Leverancier</th>
-                                        <th>Contactpersoon</th>
+                                        <th>Adres</th>
                                         <th>Leveringsdatum</th>
                                         <th>Aantal Geleverd</th>
                                         <th>Volgende Levering</th>
@@ -79,7 +85,13 @@
                                     @foreach($specifications as $spec)
                                         <tr>
                                             <td>{{ $spec->LeverancierNaam }}</td>
-                                            <td>{{ $spec->ContactPersoon }}</td>
+                                            <td>
+                                                @if($spec->Straat)
+                                                    {{ $spec->Straat }} {{ $spec->Huisnummer }}
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
+                                            </td>
                                             <td>{{ date('d-m-Y', strtotime($spec->DatumLevering)) }}</td>
                                             <td>{{ $spec->Aantal }}</td>
                                             <td>
@@ -101,12 +113,12 @@
                                 <ul class="pagination justify-content-center">
                                     @if($currentPage > 1)
                                         <li class="page-item">
-                                            <a class="page-link" href="{{ route('delivered-products.specifications', ['productId' => $product->id]) }}?start_date={{ $startDate }}&end_date={{ $endDate }}&page=1">
+                                            <a class="page-link" href="{{ route('delivered-products.specifications', ['productId' => $product->id]) }}@if($startDate && $endDate)?start_date={{ $startDate }}&end_date={{ $endDate }}&page=1@else?page=1@endif">
                                                 Eerste
                                             </a>
                                         </li>
                                         <li class="page-item">
-                                            <a class="page-link" href="{{ route('delivered-products.specifications', ['productId' => $product->id]) }}?start_date={{ $startDate }}&end_date={{ $endDate }}&page={{ $currentPage - 1 }}">
+                                            <a class="page-link" href="{{ route('delivered-products.specifications', ['productId' => $product->id]) }}@if($startDate && $endDate)?start_date={{ $startDate }}&end_date={{ $endDate }}&page={{ $currentPage - 1 }}@else?page={{ $currentPage - 1 }}@endif">
                                                 Vorige
                                             </a>
                                         </li>
@@ -119,7 +131,7 @@
                                             </li>
                                         @else
                                             <li class="page-item">
-                                                <a class="page-link" href="{{ route('delivered-products.specifications', ['productId' => $product->id]) }}?start_date={{ $startDate }}&end_date={{ $endDate }}&page={{ $i }}">
+                                                <a class="page-link" href="{{ route('delivered-products.specifications', ['productId' => $product->id]) }}@if($startDate && $endDate)?start_date={{ $startDate }}&end_date={{ $endDate }}&page={{ $i }}@else?page={{ $i }}@endif">
                                                     {{ $i }}
                                                 </a>
                                             </li>
@@ -128,12 +140,12 @@
 
                                     @if($currentPage < $totalPages)
                                         <li class="page-item">
-                                            <a class="page-link" href="{{ route('delivered-products.specifications', ['productId' => $product->id]) }}?start_date={{ $startDate }}&end_date={{ $endDate }}&page={{ $currentPage + 1 }}">
+                                            <a class="page-link" href="{{ route('delivered-products.specifications', ['productId' => $product->id]) }}@if($startDate && $endDate)?start_date={{ $startDate }}&end_date={{ $endDate }}&page={{ $currentPage + 1 }}@else?page={{ $currentPage + 1 }}@endif">
                                                 Volgende
                                             </a>
                                         </li>
                                         <li class="page-item">
-                                            <a class="page-link" href="{{ route('delivered-products.specifications', ['productId' => $product->id]) }}?start_date={{ $startDate }}&end_date={{ $endDate }}&page={{ $totalPages }}">
+                                            <a class="page-link" href="{{ route('delivered-products.specifications', ['productId' => $product->id]) }}@if($startDate && $endDate)?start_date={{ $startDate }}&end_date={{ $endDate }}&page={{ $totalPages }}@else?page={{ $totalPages }}@endif">
                                                 Laatste
                                             </a>
                                         </li>

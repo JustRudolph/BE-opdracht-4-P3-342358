@@ -137,4 +137,45 @@ class DeliveredProductsControllerTest extends TestCase
         $this->assertEquals(0, $offset);      // First page offset
         $this->assertLessThanOrEqual($itemsPerPage, count(Product::limit($itemsPerPage)->offset($offset)->get()));
     }
+
+    /**
+     * Test Case 5: Get all delivered products without date range
+     * Verifies that all products are retrieved when no date range is specified
+     */
+    public function test_all_delivered_products_without_date_range()
+    {
+        // Arrange: Create test data without specific dates
+        $contact = Contact::factory()->create();
+        $leverancier = Leverancier::factory()->create(['ContactId' => $contact->id]);
+        $product1 = Product::factory()->create(['Naam' => 'Product 1']);
+        $product2 = Product::factory()->create(['Naam' => 'Product 2']);
+        
+        ProductPerLeverancier::create([
+            'LeverancierId' => $leverancier->id,
+            'ProductId' => $product1->id,
+            'DatumLevering' => '2023-01-15',
+            'Aantal' => 10,
+            'IsActief' => 1,
+        ]);
+        
+        ProductPerLeverancier::create([
+            'LeverancierId' => $leverancier->id,
+            'ProductId' => $product2->id,
+            'DatumLevering' => '2023-12-10',
+            'Aantal' => 20,
+            'IsActief' => 1,
+        ]);
+
+        // Act: Query all delivered products without date filter
+        $deliveredProducts = ProductPerLeverancier::join('leveranciers', 'product_per_leveranciers.LeverancierId', '=', 'leveranciers.id')
+            ->join('products', 'product_per_leveranciers.ProductId', '=', 'products.id')
+            ->where('product_per_leveranciers.IsActief', 1)
+            ->where('leveranciers.IsActief', 1)
+            ->where('products.IsActief', 1)
+            ->select(['leveranciers.Naam as LeverancierNaam', 'products.Naam as ProductNaam', 'products.Barcode'])
+            ->get();
+
+        // Assert: Verify both products are retrieved regardless of date
+        $this->assertGreaterThanOrEqual(2, $deliveredProducts->count());
+    }
 }
