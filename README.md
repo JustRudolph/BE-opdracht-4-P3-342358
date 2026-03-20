@@ -2,17 +2,6 @@
 
 Welkom bij het Jamin Warehouse Management System. Dit document bevat alles wat je nodig hebt om het project op te zetten en te starten.
 
-## 📋 Inhoudsopgave
-
-- [Vereisten](#vereisten)
-- [Installatie](#installatie)
-- [Configuratie](#configuratie)
-- [Database Setup](#database-setup)
-- [Applicatie Starten](#applicatie-starten)
-- [Gebruikshandleiding](#gebruikshandleiding)
-- [Testen](#testen)
-- [Troubleshooting](#troubleshooting)
-
 ## 🔧 Vereisten
 
 Zorg ervoor dat je de volgende software hebt geïnstalleerd:
@@ -96,9 +85,6 @@ Zorg eerst dat MySQL draait. Maak vervolgens de database aan:
 ```bash
 # Windows
 mysql -u root -p < database\scripts\create_database.sql
-
-# Linux/Mac
-mysql -u root -p < database/scripts/create_database.sql
 ```
 
 Dit script zal:
@@ -112,10 +98,6 @@ Dit script zal:
 ```bash
 # Windows
 mysql -u root -p alergeen < database\scripts\stored_procedures.sql
-
-# Linux/Mac
-mysql -u root -p alergeen < database/scripts/stored_procedures.sql
-```
 
 Dit voegt de volgende procedures toe:
 - `sp_GetDeliveredProductsByDateRange()` - Haalt leveringen op per datum
@@ -148,16 +130,6 @@ php artisan serve
 
 Dit start de applicatie op `http://localhost:8000`
 
-### Methode 2: Docker (Indien beschikbaar)
-
-```bash
-docker-compose up -d
-```
-
-### Methode 3: Apache/Nginx
-
-Configureer je webserver om naar de `public/` directory te wijzen.
-
 ## 📖 Gebruikshandleiding
 
 ### Toegang tot de Applicatie
@@ -167,20 +139,6 @@ Open je browser en navigeer naar:
 ```
 http://localhost:8000
 ```
-
-### Belangrijkste Features
-
-#### 1. Overzicht Geleverde Producten
-- Navigeer naar `/delivered-products`
-- Optioneel: selecteer een datumbereik
-- Bekijk alle geleverde producten met paginering (4 per pagina)
-
-#### 2. Product Specificaties
-- Klik op de "?" knop in het overzicht
-- Bekijk gedetailleerde leveringshistorie per product
-
-#### 3. Allergenfiltering
-- Gebruik de allergen filters om producten te vinden met bepaalde allergenen
 
 ## 🧪 Testen
 
@@ -208,68 +166,3 @@ php artisan test --coverage
 - ✅ **11 Tests** - Alle PASSING
 - ✅ **38 Assertions** - 100% geslaagd
 - ✅ **76% Code Coverage** - Grade A
-
-## 🐛 Troubleshooting
-
-### Probleem: "SQLSTATE[HY000]: General error: 1030"
-
-**Oorzaak:** Database niet gevonden  
-**Oplossing:** 
-```bash
-php artisan migrate
-mysql -u root -p < database/scripts/create_database.sql
-```
-
-### Probleem: "Class 'PDO' not found"
-
-**Oorzaak:** PHP PDO extensie is niet ingeschakeld  
-**Oplossing:**
-- Windows: Activeer `extension=pdo_mysql` in `php.ini`
-- Linux: `sudo apt-get install php8.4-mysql`
-
-### Probleem: "MySQL Connection refused"
-
-**Oorzaak:** MySQL server draait niet  
-**Oplossing:**
-- Windows: `mysql.exe -u root -p`
-- Linux: `sudo systemctl start mysql` of `sudo service mysql start`
-- Mac: `brew services start mysql`
-
-### Probleem: "Port 8000 is already in use"
-
-**Oplossing:** Gebruik een ander poort
-```bash
-php artisan serve --port=8001
-```
-
-### Probleem: Statische bestanden laden niet
-
-**Oplossing:** 
-```bash
-php artisan storage:link
-npm run build
-```
-
-## 📚 Aanvullende Bronnen
-
-- [Laravel Documentatie](https://laravel.com/docs)
-- [MySQL Documentatie](https://dev.mysql.com/doc/)
-- [Blade Templating](https://laravel.com/docs/blade)
-- [Database Specificatie](docs/DatabaseSpecification.md)
-- [Feature Documentatie](docs/FEATURE_README.md)
-- [Test Plan](docs/Testplan.md)
-
-## 📞 Ondersteuning
-
-Bij problemen:
-1. Controleer de [Troubleshooting](#troubleshooting) sectie
-2. Lees de gerelateerde documentatie in de `docs/` map
-3. Run `php artisan test` om de gezondheid te controleren
-
-## 📄 Licentie
-
-Dit project is gelicentieerd onder de MIT licentie.
-
----
-
-**Veel succes met het Jamin Warehouse Management System! 🎉**
