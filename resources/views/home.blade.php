@@ -64,6 +64,7 @@
     <div class="container">
         <h1>🏢 Jamin Manager</h1>
         <div class="links">
+            <a href="{{ route('delivered-products.index') }}">Overzicht Geleverde Producten</a>
             <a href="{{ route('allergeens.index') }}">Overzicht Allergenen</a>
             <a href="{{ route('leveranciers.index') }}">Wijzigen Leveranciers</a>
         </div>

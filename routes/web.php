@@ -4,10 +4,15 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LeverancierController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AllergeenController;
+use App\Http\Controllers\DeliveredProductsController;
 
 Route::get('/', function () {
     return view('home');
 });
+
+// User Story 01: Overzicht Geleverde Producten
+Route::get('/delivered-products', [DeliveredProductsController::class, 'index'])->name('delivered-products.index');
+Route::get('/delivered-products/{productId}/specifications', [DeliveredProductsController::class, 'specifications'])->name('delivered-products.specifications');
 
 // Allergen Overview Routes (User Story 1)
 Route::get('/allergeens', [AllergeenController::class, 'index'])->name('allergeens.index');
